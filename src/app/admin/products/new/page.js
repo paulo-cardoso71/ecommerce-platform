@@ -1,0 +1,132 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function NewProductPage() {
+  // 1. Estados para os campos do produto
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
+  const [imageUrl, setImageUrl] = useState(''); // Por enquanto será apenas um link de texto
+  const [categoryId, setCategoryId] = useState(''); // O ID da categoria escolhida
+  
+  // 2. Estado para guardar a lista de categorias que vem do banco
+  const [categories, setCategories] = useState([]);
+  
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  // 3. O PULO DO GATO: Buscar as categorias assim que a tela abre
+  useEffect(() => {
+    fetch('/api/categories')
+      .then(res => res.json())
+      .then(data => setCategories(data));
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          name, 
+          description, 
+          price: Number(price), // Converte texto pra número
+          imageUrl,
+          category: categoryId // Envia o ID da categoria
+        }),
+      });
+
+      if (res.ok) {
+        router.push('/admin/products');
+        router.refresh();
+      } else {
+        alert("Erro ao salvar");
+      }
+    } catch (error) {
+      alert("Erro de conexão");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md border border-gray-200 mt-10">
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">Create New Product</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        
+        {/* Nome */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Product Name</label>
+          <input 
+            type="text" placeholder="Ex: iPhone 15" required
+            value={name} onChange={e => setName(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded text-gray-900"
+          />
+        </div>
+
+        {/* Categoria (DROPDOWN) */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Category</label>
+          <select 
+            value={categoryId} 
+            onChange={e => setCategoryId(e.target.value)}
+            required
+            className="w-full p-2 border border-gray-300 rounded text-gray-900 bg-white"
+          >
+            <option value="">Select a category...</option>
+            {/* Aqui fazemos um loop nas categorias para criar as opções */}
+            {categories.length > 0 && categories.map(cat => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Descrição */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <textarea 
+            placeholder="Product details..."
+            value={description} onChange={e => setDescription(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded text-gray-900 h-24"
+          />
+        </div>
+
+        {/* Preço e Imagem (Lado a Lado) */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Price (USD)</label>
+            <input 
+              type="number" step="0.01" placeholder="0.00" required
+              value={price} onChange={e => setPrice(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded text-gray-900"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Image URL</label>
+            <input 
+              type="text" placeholder="http://..."
+              value={imageUrl} onChange={e => setImageUrl(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded text-gray-900"
+            />
+          </div>
+        </div>
+
+        <button 
+          type="submit" disabled={loading}
+          className="w-full bg-emerald-600 text-white py-2 px-4 rounded hover:bg-emerald-700 disabled:bg-emerald-300 font-bold"
+        >
+          {loading ? 'Saving...' : 'Create Product'}
+        </button>
+
+      </form>
+    </div>
+  );
+}
