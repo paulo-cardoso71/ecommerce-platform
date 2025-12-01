@@ -33,6 +33,9 @@ export default async function AdminLayout({ children }) {
           <Link href="/admin/orders" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-md">
             🛒 Orders
           </Link>
+          <Link href="/admin/settings" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-md">
+          ⚙️ Settings
+          </Link>
         </nav>
 
         <div className="p-4 border-t border-gray-200">

@@ -3,9 +3,15 @@ import Credentials from "next-auth/providers/credentials";
 import connectToDatabase from "./lib/db";
 import User from "./models/User";
 import bcrypt from "bcryptjs";
+import Google from "next-auth/providers/google";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+
     Credentials({
       name: "Credentials",
       credentials: {
@@ -52,6 +58,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account.provider === "google") {
+        await connectToDatabase();
+        try {
+          // Verifica se já existe, se não, cria
+          const existingUser = await User.findOne({ email: user.email });
+          if (!existingUser) {
+            await User.create({
+              name: user.name,
+              email: user.email,
+              image: user.image,
+              role: "user", // Padrão é user comum
+              password: "", // Google não tem senha
+            });
+          }
+          return true;
+        } catch (error) {
+          console.error("Erro ao salvar usuário Google:", error);
+          return false;
+        }
+      }
+      return true; // Para login com senha, deixa passar
+    },
     // Esse callback roda assim que o login dá certo.
     // O objetivo é colocar o ROLE dentro do token JWT.
     async jwt({ token, user }) {

@@ -5,7 +5,7 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true }, // Email não pode repetir
   password: { 
     type: String, 
-    required: true, 
+    required: false, 
     select: false // Segurança: Quando buscarmos usuários, a senha NÃO vem junto por padrão
   },
   role: { 
