@@ -3,6 +3,8 @@ import Product from "@/models/Product";
 import Category from "@/models/Category"; // Importante pro populate
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
+import AddToCartBtn from "@/components/AddToCartBtn";
+
 
 // Next.js 15: params agora é uma Promise, por isso o 'await params'
 export default async function ProductDetailsPage({ params }) {
@@ -10,6 +12,12 @@ export default async function ProductDetailsPage({ params }) {
 
   await connectToDatabase();
   const product = await Product.findById(id).populate('category').lean();
+
+  // --- TRUQUE PARA LIMPAR O OBJETO ---
+  product._id = product._id.toString(); // Converte ID para texto simples
+if (product.category) {
+  product.category._id = product.category._id.toString();
+}
 
   if (!product) {
     return (
@@ -74,9 +82,8 @@ export default async function ProductDetailsPage({ params }) {
 
               {/* Botões de Ação */}
               <div className="flex flex-col sm:flex-row gap-4 border-t border-gray-100 pt-8">
-                <button className="flex-1 bg-indigo-600 text-white text-lg font-bold py-4 rounded-xl hover:bg-indigo-700 transition shadow-lg hover:shadow-indigo-500/30">
-                  Add to Cart
-                </button>
+                {/* O botão de compras */}
+                <AddToCartBtn product={product} />
                 <button className="flex-1 bg-white text-gray-900 border-2 border-gray-200 text-lg font-bold py-4 rounded-xl hover:border-gray-900 transition">
                   Buy Now
                 </button>
