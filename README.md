@@ -96,4 +96,26 @@ npm run dev
 http://localhost:3000
 ```
 
+## 🧪 Testing & Quality Assurance
+
+ESLint: Enforces code quality and catches errors early.
+
+Mobile Responsiveness: Tested on multiple screen sizes (Mobile, Tablet, Desktop).
+
+Error Handling: Robust try/catch blocks in API routes and visual feedback (Toasts) for users.
+
+## 📦 Deployment
+
+This project is deployed on Vercel, taking advantage of:
+
+Serverless Functions: For API routes.
+
+Edge Caching: For fast static content delivery.
+
+Continuous Deployment: Updates automatically on git push.
+
+Live Demo: https://ecommerce-platform-paulo.vercel.app
+
+## Author
+
 Developed by Paulo. Ready for international opportunities.
