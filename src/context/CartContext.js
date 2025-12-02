@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
 const CartContext = createContext();
 
@@ -49,7 +50,7 @@ export function CartProvider({ children }) {
       return [...prev, { ...product, quantity: 1 }];
     });
     
-    alert("Added to cart!");
+    toast.success("Added to cart!");
   };
 
   const removeFromCart = (productId) => {

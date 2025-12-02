@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react'; // use para ler params no Next 15
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function EditProductPage({ params }) {
@@ -14,17 +14,20 @@ export default function EditProductPage({ params }) {
   const [imageUrl, setImageUrl] = useState('');
   const [categoryId, setCategoryId] = useState('');
   
-  // Lista de categorias para o dropdown
+  // NOVO ESTADO: Destaque
+  const [featured, setFeatured] = useState(false);
+  
+  // Listas e Loadings
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // 1. Busca todas as categorias disponíveis
+    // 1. Busca categorias
     fetch('/api/categories')
       .then(res => res.json())
       .then(cats => setCategories(cats));
 
-    // 2. Busca os dados do produto atual
+    // 2. Busca o produto
     fetch('/api/products?id=' + id)
       .then(res => res.json())
       .then(product => {
@@ -33,12 +36,14 @@ export default function EditProductPage({ params }) {
         setPrice(product.price);
         setImageUrl(product.imageUrl || '');
         
-        // TRUQUE: Como usamos .populate(), o product.category é um objeto { _id, name }
-        // Mas o dropdown precisa apenas do ID string.
+        // Carrega o estado do destaque
+        setFeatured(product.featured || false);
+        
+        // Lógica do ID da categoria
         if (product.category && product.category._id) {
           setCategoryId(product.category._id);
         } else {
-          setCategoryId(product.category); // Caso venha sem populate (raro, mas seguro)
+          setCategoryId(product.category);
         }
       });
   }, [id]);
@@ -49,15 +54,16 @@ export default function EditProductPage({ params }) {
 
     try {
       const res = await fetch('/api/products', {
-        method: 'PUT', // Vamos precisar adicionar o PUT na API de products!
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          id, // Importante enviar o ID para saber quem atualizar
+          id, 
           name, 
           description, 
           price: Number(price), 
           imageUrl, 
-          category: categoryId 
+          category: categoryId,
+          featured // <--- IMPORTANTE: Enviando o checkbox para a API
         }),
       });
 
@@ -89,7 +95,7 @@ export default function EditProductPage({ params }) {
           />
         </div>
 
-        {/* Categoria Dropdown */}
+        {/* Categoria */}
         <div>
           <label className="block text-sm font-medium text-gray-700">Category</label>
           <select 
@@ -128,6 +134,20 @@ export default function EditProductPage({ params }) {
               className="w-full p-2 border border-gray-300 rounded text-gray-900"
             />
           </div>
+        </div>
+
+        {/* --- NOVO: CHECKBOX DE DESTAQUE --- */}
+        <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-md mt-4">
+          <input 
+            type="checkbox" 
+            id="featured"
+            checked={featured}
+            onChange={e => setFeatured(e.target.checked)}
+            className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500 cursor-pointer"
+          />
+          <label htmlFor="featured" className="font-medium text-yellow-800 cursor-pointer select-none">
+            ⭐ Highlight this product on Homepage (Hero Section)
+          </label>
         </div>
 
         <div className="flex gap-4 mt-6">

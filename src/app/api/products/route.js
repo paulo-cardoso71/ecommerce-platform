@@ -56,6 +56,7 @@ export async function PUT(req) {
   try {
     // 1. Segurança
     const session = await auth();
+    
     if (!session || session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -64,7 +65,7 @@ export async function PUT(req) {
     await connectToDatabase();
 
     // 3. Pegar os dados novos
-    const { id, name, description, price, imageUrl, category } = await req.json();
+    const { id, name, description, price, imageUrl, category, featured } = await req.json();
 
     if (!id) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
@@ -72,13 +73,13 @@ export async function PUT(req) {
 
     // 4. Atualizar no Banco
     // findByIdAndUpdate(QUEM, O_QUE_MUDAR, { new: true }) -> o new: true retorna o dado atualizado
-    const updatedCategory = await Product.findByIdAndUpdate(
+    const updatedProduct = await Product.findByIdAndUpdate(
       id,
-      { name, description, price, imageUrl, category },
+      { name, description, price, imageUrl, category, featured }, // <--- Adicionado!
       { new: true } 
     );
 
-    return NextResponse.json(updatedCategory, { status: 200 });
+    return NextResponse.json(updatedProduct, { status: 200 });
 
   } catch (error) {
     return NextResponse.json({ error: "Error updating" }, { status: 500 });

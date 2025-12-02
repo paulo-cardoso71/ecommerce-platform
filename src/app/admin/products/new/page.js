@@ -4,20 +4,19 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function NewProductPage() {
-  // 1. Estados para os campos do produto
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
-  const [imageUrl, setImageUrl] = useState(''); // Por enquanto será apenas um link de texto
-  const [categoryId, setCategoryId] = useState(''); // O ID da categoria escolhida
+  const [imageUrl, setImageUrl] = useState('');
+  const [categoryId, setCategoryId] = useState('');
   
-  // 2. Estado para guardar a lista de categorias que vem do banco
+  // NOVO: Estado do Destaque
+  const [featured, setFeatured] = useState(false);
+  
   const [categories, setCategories] = useState([]);
-  
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // 3. O PULO DO GATO: Buscar as categorias assim que a tela abre
   useEffect(() => {
     fetch('/api/categories')
       .then(res => res.json())
@@ -35,9 +34,10 @@ export default function NewProductPage() {
         body: JSON.stringify({ 
           name, 
           description, 
-          price: Number(price), // Converte texto pra número
-          imageUrl,
-          category: categoryId // Envia o ID da categoria
+          price: Number(price), 
+          imageUrl, 
+          category: categoryId,
+          featured // <--- Enviando o destaque na criação
         }),
       });
 
@@ -70,21 +70,16 @@ export default function NewProductPage() {
           />
         </div>
 
-        {/* Categoria (DROPDOWN) */}
+        {/* Categoria */}
         <div>
           <label className="block text-sm font-medium text-gray-700">Category</label>
           <select 
-            value={categoryId} 
-            onChange={e => setCategoryId(e.target.value)}
-            required
+            value={categoryId} onChange={e => setCategoryId(e.target.value)} required
             className="w-full p-2 border border-gray-300 rounded text-gray-900 bg-white"
           >
             <option value="">Select a category...</option>
-            {/* Aqui fazemos um loop nas categorias para criar as opções */}
-            {categories.length > 0 && categories.map(cat => (
-              <option key={cat._id} value={cat._id}>
-                {cat.name}
-              </option>
+            {categories.map(cat => (
+              <option key={cat._id} value={cat._id}>{cat.name}</option>
             ))}
           </select>
         </div>
@@ -99,7 +94,7 @@ export default function NewProductPage() {
           />
         </div>
 
-        {/* Preço e Imagem (Lado a Lado) */}
+        {/* Preço e Imagem */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Price (USD)</label>
@@ -119,9 +114,23 @@ export default function NewProductPage() {
           </div>
         </div>
 
+        {/* --- CHECKBOX DE DESTAQUE --- */}
+        <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-md mt-4">
+          <input 
+            type="checkbox" 
+            id="featured"
+            checked={featured}
+            onChange={e => setFeatured(e.target.checked)}
+            className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500 cursor-pointer"
+          />
+          <label htmlFor="featured" className="font-medium text-yellow-800 cursor-pointer select-none">
+            ⭐ Highlight this product on Homepage
+          </label>
+        </div>
+
         <button 
           type="submit" disabled={loading}
-          className="w-full bg-emerald-600 text-white py-2 px-4 rounded hover:bg-emerald-700 disabled:bg-emerald-300 font-bold"
+          className="w-full bg-emerald-600 text-white py-2 px-4 rounded hover:bg-emerald-700 disabled:bg-emerald-300 font-bold mt-6"
         >
           {loading ? 'Saving...' : 'Create Product'}
         </button>

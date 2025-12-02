@@ -17,26 +17,26 @@ export default function CartPage() {
   const handleCheckout = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/orders', {
+      // 1. Chama a nossa nova rota de checkout
+      const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: cart, total }),
+        body: JSON.stringify({ items: cart }),
       });
 
       if (res.status === 401) {
         alert("Please login to checkout!");
-        router.push("/api/auth/signin"); // Manda pro login do NextAuth
+        router.push("/api/auth/signin");
         return;
       }
 
-      if (res.ok) {
-        // Se deu certo, precisamos limpar o carrinho!
-        // (Dica: o ideal seria ter uma função clearCart no context, 
-        // mas por enquanto vamos forçar limpando o localStorage e recarregando)
-        localStorage.removeItem("nextstore_cart");
-        window.location.href = "/success"; 
+      const data = await res.json();
+
+      if (data.url) {
+        // 2. A MÁGICA: Redireciona o navegador para o Stripe!
+        window.location.href = data.url;
       } else {
-        alert("Failed to checkout");
+        alert("Failed to create checkout session");
       }
 
     } catch (error) {
@@ -46,7 +46,6 @@ export default function CartPage() {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
