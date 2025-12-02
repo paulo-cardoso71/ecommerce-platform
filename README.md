@@ -59,3 +59,41 @@ If you want to test this project on your machine, follow these steps:
    ```bash
    git clone [https://github.com/YOUR_GITHUB_USERNAME/ecommerce-platform.git](https://github.com/YOUR_GITHUB_USERNAME/ecommerce-platform.git)
    ```
+2. **Install dependencies:**
+
+```bash
+   npm install
+```
+
+3. **Configure Environment Variables: Create a .env file in the root directory and add the following keys (you need your own API keys):**
+
+```bash
+# Database
+MONGODB_URI="your_mongodb_connection_string"
+
+# NextAuth
+AUTH_SECRET="your_generated_secret"
+AUTH_URL="http://localhost:3000"
+
+# Google OAuth
+GOOGLE_CLIENT_ID="your_google_client_id"
+GOOGLE_CLIENT_SECRET="your_google_client_secret"
+
+# Stripe Payments
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
+STRIPE_SECRET_KEY="sk_test_..."
+```
+
+4. **Run the development server:**
+
+```bash
+npm run dev
+```
+
+5. **Open:**
+
+```bash
+http://localhost:3000
+```
+
+Developed by Paulo. Ready for international opportunities.
