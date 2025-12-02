@@ -1,4 +1,4 @@
-'use client'; // Precisa ser Client porque tem interação (onClick)
+'use client'; // Must be Client Component for interaction (onClick)
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -8,7 +8,7 @@ export default function DeleteProductBtn({ id }) {
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
-    // Pergunta de segurança (browser nativo)
+    // Native browser confirmation
     const confirmed = confirm("Are you sure you want to delete this product?");
     if (!confirmed) return;
 
@@ -20,13 +20,13 @@ export default function DeleteProductBtn({ id }) {
       });
 
       if (res.ok) {
-        router.refresh(); // Atualiza a lista na hora sem recarregar a página toda
+        router.refresh(); // Refresh list instantly without full reload
       } else {
-        alert("Erro ao deletar");
+        alert("Failed to delete product");
       }
     } catch (error) {
       console.error(error);
-      alert("Erro");
+      alert("Error");
     } finally {
       setLoading(false);
     }

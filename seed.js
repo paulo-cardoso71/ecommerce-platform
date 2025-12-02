@@ -1,51 +1,51 @@
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-import User from './src/models/User.js'; // Note o .js no final, importante para scripts manuais
+import User from './src/models/User.js';
 
-// Carrega as variáveis do .env
+// Load environment variables from .env
 dotenv.config();
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  console.error('❌ Erro: MONGODB_URI não encontrada no .env');
+  console.error('❌ Error: MONGODB_URI not found in .env');
   process.exit(1);
 }
 
 const seed = async () => {
   try {
-    // 1. Conecta ao Banco
+    // 1. Connect to the Database
     await mongoose.connect(MONGODB_URI);
-    console.log('📦 Conectado ao MongoDB para seeding...');
+    console.log('📦 Connected to MongoDB for seeding...');
 
-    // 2. Verifica se já existe admin
+    // 2. Check if admin already exists
     const existingAdmin = await User.findOne({ email: 'admin@loja.com' });
     if (existingAdmin) {
-      console.log('⚠️ Admin já existe. Nada a fazer.');
+      console.log('⚠️ Admin already exists. Skipping...');
       process.exit();
     }
 
-    // 3. Cria o Hash da senha (segurança!)
-    // Vamos usar a senha "123456"
+    // 3. Hash the password (security first!)
+    // We'll use "123456" as the password
     const hashedPassword = await bcrypt.hash('123456', 10);
 
-    // 4. Cria o Usuário
+    // 4. Create the User
     await User.create({
       name: 'Admin Paulo',
       email: 'admin@loja.com',
-      password: hashedPassword, // Salva a versão criptografada
+      password: hashedPassword, // Save the encrypted version
       role: 'admin',
     });
 
-    console.log('✅ Admin criado com sucesso!');
+    console.log('✅ Admin created successfully!');
     console.log('📧 Email: admin@loja.com');
-    console.log('🔑 Senha: 123456');
+    console.log('🔑 Password: 123456');
 
   } catch (error) {
-    console.error('❌ Erro no seed:', error);
+    console.error('❌ Seeding error:', error);
   } finally {
-    mongoose.connection.close(); // Fecha a conexão
+    mongoose.connection.close(); // Close connection
   }
 };
 

@@ -7,11 +7,13 @@ const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
-  // Essa trava impede que a gente salve um carrinho vazio antes de carregar o antigo
+  
+  // Safety Lock: Prevents saving an empty cart before loading the existing one
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // 1. CARREGAR (Ler do LocalStorage)
+  // 1. LOAD (Read from LocalStorage)
   useEffect(() => {
+    // Check required because Next.js runs on the server first
     if (typeof window !== "undefined") {
       const savedCart = localStorage.getItem("nextstore_cart");
       if (savedCart) {
@@ -19,17 +21,17 @@ export function CartProvider({ children }) {
           // eslint-disable-next-line react-hooks/set-state-in-effect
           setCart(JSON.parse(savedCart));
         } catch (error) {
-          console.error("Erro ao ler carrinho:", error);
+          console.error("Error loading cart:", error);
         }
       }
-      // Marca como inicializado, agora já podemos salvar
+      // Mark as initialized, safe to save now
       setIsInitialized(true); 
     }
   }, []);
 
-  // 2. SALVAR (Escrever no LocalStorage)
+  // 2. SAVE (Write to LocalStorage)
   useEffect(() => {
-    // Só salva SE já tivermos carregado o carrinho inicial (pra não apagar dados)
+    // Only save IF we have already loaded the initial cart (to avoid overwriting data)
     if (isInitialized && typeof window !== "undefined") {
       localStorage.setItem("nextstore_cart", JSON.stringify(cart));
     }
@@ -37,9 +39,11 @@ export function CartProvider({ children }) {
 
   const addToCart = (product) => {
     setCart((prev) => {
+      // Check if item already exists in cart
       const existingItem = prev.find((item) => item._id === product._id);
       
       if (existingItem) {
+        // If exists, just increase quantity
         return prev.map((item) =>
           item._id === product._id
             ? { ...item, quantity: (item.quantity || 1) + 1 }
@@ -47,6 +51,7 @@ export function CartProvider({ children }) {
         );
       }
       
+      // If new, add to list with quantity 1
       return [...prev, { ...product, quantity: 1 }];
     });
     
@@ -57,8 +62,21 @@ export function CartProvider({ children }) {
     setCart((prev) => prev.filter((item) => item._id !== productId));
   };
 
+  const decreaseQuantity = (productId) => {
+    setCart((prev) => {
+      return prev.map((item) => {
+        if (item._id === productId) {
+          // Prevent quantity from going below 1
+          const newQuantity = (item.quantity || 1) - 1;
+          return { ...item, quantity: newQuantity > 0 ? newQuantity : 1 };
+        }
+        return item;
+      });
+    });
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, decreaseQuantity }}>
       {children}
     </CartContext.Provider>
   );

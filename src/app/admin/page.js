@@ -49,14 +49,7 @@ export default async function AdminDashboard() {
 
       </div>
 
-      {/* Dica visual para o futuro */}
-      <div className="mt-8 p-6 bg-indigo-50 rounded-lg border border-indigo-100">
-        <h3 className="text-indigo-800 font-bold mb-2">🚀 Próximos Passos</h3>
-        <p className="text-indigo-600 text-sm">
-          Seu sistema está registrando pedidos corretamente. 
-          O próximo grande nível seria integrar pagamentos reais com <strong>Stripe</strong>.
-        </p>
-      </div>
+     
     </div>
   );
 }

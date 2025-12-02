@@ -2,19 +2,19 @@ import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  email: { type: String, required: true, unique: true }, // Email não pode repetir
+  email: { type: String, required: true, unique: true }, // Email must be unique
   password: { 
     type: String, 
     required: false, 
-    select: false // Segurança: Quando buscarmos usuários, a senha NÃO vem junto por padrão
+    select: false // Security: Password is NOT returned in queries by default
   },
   role: { 
     type: String, 
-    enum: ['user', 'admin'], // Só aceita 'user' ou 'admin'
+    enum: ['user', 'admin'], // Only allows 'user' or 'admin'
     default: 'user' 
   },
   image: { type: String },
 }, { timestamps: true });
 
-// Se o model já existe, usa ele. Se não, cria.
+// Use existing model if available, otherwise create it.
 export default mongoose.models.User || mongoose.model('User', UserSchema);

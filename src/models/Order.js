@@ -1,14 +1,14 @@
 import mongoose from 'mongoose';
 
-// Schema do Item do Pedido (Snapshot)
+// Order Item Schema (Snapshot Strategy)
 const OrderItemSchema = new mongoose.Schema({
   product: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Product', // Link para saber qual foi o produto original
+    ref: 'Product', // Reference to the original product
     required: true 
   },
-  name: { type: String, required: true }, // Cópia do Nome (se o produto mudar de nome, aqui mantém o antigo)
-  price: { type: Number, required: true }, // Cópia do Preço (se o preço subir, aqui mantém o pago)
+  name: { type: String, required: true }, // Snapshot of Name (keeps historical data if product changes)
+  price: { type: Number, required: true }, // Snapshot of Price (keeps paid price if product price increases)
   quantity: { type: Number, required: true, min: 1 },
   image: { type: String }, 
 });
@@ -16,17 +16,17 @@ const OrderItemSchema = new mongoose.Schema({
 const OrderSchema = new mongoose.Schema({
   user: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', // Link para saber quem comprou
+    ref: 'User', // Reference to the user who made the purchase
     required: true 
   },
-  items: [OrderItemSchema], // Lista de itens comprados
-  totalAmount: { type: Number, required: true }, // Total pago
+  items: [OrderItemSchema], // List of purchased items
+  totalAmount: { type: Number, required: true }, // Total paid
   status: { 
     type: String, 
     enum: ['pending', 'paid', 'shipped', 'delivered', 'cancelled'], 
     default: 'pending' 
   },
-  stripePaymentId: { type: String }, // ID do Stripe para auditoria
+  stripePaymentId: { type: String }, // Stripe ID for auditing
 }, { timestamps: true });
 
 export default mongoose.models.Order || mongoose.model('Order', OrderSchema);

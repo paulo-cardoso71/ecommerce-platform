@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           
-          {/* Coluna 1: Marca */}
+          {/* Column 1: Brand */}
           <div className="col-span-1 md:col-span-1">
             <Link href="/" className="text-2xl font-bold text-indigo-600 tracking-tighter">
               NextStore
@@ -16,7 +16,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Coluna 2: Links */}
+          {/* Column 2: Links */}
           <div>
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Shop</h3>
             <ul className="mt-4 space-y-4">
@@ -26,7 +26,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Coluna 3: Admin */}
+          {/* Column 3: Admin */}
           <div>
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Support</h3>
             <ul className="mt-4 space-y-4">
@@ -35,7 +35,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Coluna 4: Newsletter (Visual apenas) */}
+          {/* Column 4: Newsletter (Visual only) */}
           <div>
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Stay in the loop</h3>
             <div className="mt-4 flex">

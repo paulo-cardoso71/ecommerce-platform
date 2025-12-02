@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# NextStore - Full Stack E-commerce Platform 🛒
 
-## Getting Started
+> A complete, responsive e-commerce solution built to demonstrate modern web development capabilities using the Next.js ecosystem.
 
-First, run the development server:
+## 📋 What is this?
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**NextStore** is a fully functional web application that simulates a real-world online store. It allows users to browse products, filter by categories, manage a shopping cart, and complete payments securely. It also features a comprehensive **Admin Panel** for business management.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Tech Stack
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+This project was built using the most modern stack available for React developers:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Framework:** Next.js 15 (App Router & Server Actions)
+- **Language:** JavaScript (ES6+)
+- **Styling:** TailwindCSS
+- **Database:** MongoDB (via Mongoose ODM)
+- **Authentication:** NextAuth.js v5 (Google OAuth & Credentials)
+- **Payments:** Stripe Checkout Integration
+- **State Management:** React Context API (Cart)
+- **Notifications:** React Hot Toast
 
-## Learn More
+## ✨ Key Features
 
-To learn more about Next.js, take a look at the following resources:
+### 🛍️ Customer Experience
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Dynamic Showcase:** Featured products carousel and real-time category filtering.
+- **Smart Cart:** Persists items on local storage, allowing quantity adjustments and removal.
+- **Secure Checkout:** Integrated with Stripe for credit card processing (Test Mode).
+- **Mobile First:** Fully responsive design for all devices.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 🔐 Admin Dashboard
 
-## Deploy on Vercel
+- **Analytics:** Real-time overview of total revenue, active orders, and product count.
+- **Product Management:** Full CRUD (Create, Read, Update, Delete) for Products and Categories.
+- **Highlights:** Ability to toggle "Featured" products for the homepage banner.
+- **Security:** Protected routes and password management.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🎯 Project Ambition
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project serves as a **Professional Portfolio Piece (MVP)**.
+It aims to showcase proficiency in Full Stack development, bridging the gap between a robust backend (API Routes/DB) and a polished frontend (React/UX). It is structured to be scalable and maintainable.
+
+## 🚦 Project Status
+
+**Completed (v1.1.0)**
+
+- [x] Authentication & Authorization
+- [x] Database Connection & Models
+- [x] Product & Category Management
+- [x] Shopping Cart Logic
+- [x] Stripe Payments Integration
+- [x] UI/UX Polish
+
+## 🔧 How to Run Locally
+
+If you want to test this project on your machine, follow these steps:
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/YOUR_GITHUB_USERNAME/ecommerce-platform.git](https://github.com/YOUR_GITHUB_USERNAME/ecommerce-platform.git)
+   ```

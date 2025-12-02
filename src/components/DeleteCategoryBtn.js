@@ -1,4 +1,4 @@
-'use client'; // Precisa ser Client porque tem interação (onClick)
+'use client';
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -8,7 +8,6 @@ export default function DeleteCategoryBtn({ id }) {
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
-    // Pergunta de segurança (browser nativo)
     const confirmed = confirm("Are you sure you want to delete this category?");
     if (!confirmed) return;
 
@@ -20,13 +19,13 @@ export default function DeleteCategoryBtn({ id }) {
       });
 
       if (res.ok) {
-        router.refresh(); // Atualiza a lista na hora sem recarregar a página toda
+        router.refresh();
       } else {
-        alert("Erro ao deletar");
+        alert("Failed to delete category");
       }
     } catch (error) {
       console.error(error);
-      alert("Erro");
+      alert("Error");
     } finally {
       setLoading(false);
     }
