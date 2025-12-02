@@ -3,7 +3,8 @@ import Product from "@/models/Product";
 import Category from "@/models/Category"; 
 import Navbar from "@/components/Navbar";
 import ProductShowcase from "@/components/ProductShowcase";
-import HeroCarousel from "@/components/HeroCarousel"; // <--- NOVO IMPORT
+import HeroCarousel from "@/components/HeroCarousel";
+import { Suspense } from "react";
 
 export default async function HomePage() {
   await connectToDatabase();
@@ -46,7 +47,9 @@ export default async function HomePage() {
       )}
 
       {/* VITRINE */}
-      <ProductShowcase initialProducts={products} categories={categories} />
+      <Suspense fallback={<div className="text-center py-20">Loading showcase...</div>}>
+        <ProductShowcase initialProducts={products} categories={categories} />
+      </Suspense>
 
     </div>
   );
