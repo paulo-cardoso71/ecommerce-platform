@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, use } from 'react'; // use é novidade do Next 15 para params
+import { useState, useEffect, use } from 'react'; 
 import { useRouter } from 'next/navigation';
 
 export default function EditCategoryPage({ params }) {
-  // No Next.js 15, params é uma Promise, precisamos do 'use' para ler
+  // In Next.js 15, params is a Promise, we need 'use' to read it
   const { id } = use(params);
   
   const router = useRouter();
@@ -12,10 +12,10 @@ export default function EditCategoryPage({ params }) {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // --- O PULO DO GATO: Carregar os dados existentes ---
+  // --- Loads existing data  ---
   useEffect(() => {
-    // Busca os dados da categoria assim que a tela abre
-    fetch('/api/categories?id=' + id) // Vamos precisar ajustar o GET na API para aceitar ID!
+    // Search data in the category as soon as it opens
+    fetch('/api/categories?id=' + id) 
       .then(res => res.json())
       .then(data => {
         setName(data.name);
@@ -28,7 +28,7 @@ export default function EditCategoryPage({ params }) {
     setLoading(true);
 
     try {
-      // Aqui usamos PUT em vez de POST
+      // We use put
       const res = await fetch('/api/categories', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -76,7 +76,7 @@ export default function EditCategoryPage({ params }) {
         <div className="flex gap-2">
             <button 
             type="button"
-            onClick={() => router.back()} // Botão de cancelar
+            onClick={() => router.back()} // Cancel button
             className="w-1/3 bg-gray-200 text-gray-800 py-2 rounded-md hover:bg-gray-300"
             >
             Cancel

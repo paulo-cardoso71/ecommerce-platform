@@ -1,43 +1,45 @@
-import { auth } from "@/auth"; // Precisamos saber QUEM comprou
+import { auth } from "@/auth"; 
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/db";
 import Order from "@/models/Order";
 
 export async function POST(req) {
   try {
-    // 1. Verifica se o usuário está logado (pra saber quem é o dono do pedido)
+    // 1. Identity Verification
     const session = await auth();
     
     if (!session) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
     await connectToDatabase();
 
-    // 2. Recebe os dados do carrinho
+    // 2. Payload Validation
     const { items, total } = await req.json();
 
     if (!items || items.length === 0) {
-      return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
+      return NextResponse.json({ error: "Cannot create order with empty cart" }, { status: 400 });
     }
 
-    // 3. Cria o Pedido no Banco
+    // 3. Order Creation (Snapshot Strategy)
+    // We snapshot product details (name, price) at the time of purchase.
+    // This prevents future product price changes from affecting historical order records.
     const newOrder = await Order.create({
-      user: session.user.id, // ID do usuário logado
+      user: session.user.id,
       items: items.map(item => ({
-        product: item._id,
-        name: item.name,
-        price: item.price,
+        product: item._id, // Reference to the original product
+        name: item.name,   // Snapshot of name
+        price: item.price, // Snapshot of price
         quantity: item.quantity || 1
       })),
       totalAmount: total,
-      status: 'paid', // Como é simulado, já nasce pago
+      status: 'paid', // Simulating successful payment state
     });
 
     return NextResponse.json(newOrder, { status: 201 });
 
   } catch (error) {
-    console.error("Erro ao criar pedido:", error);
-    return NextResponse.json({ error: "Error creating order" }, { status: 500 });
+    console.error("Order Creation Error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

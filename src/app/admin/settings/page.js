@@ -17,7 +17,7 @@ export default function SettingsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validação básica no front
+      // Frontend validation
     if (formData.newPassword !== formData.confirmPassword) {
       alert("New passwords do not match!");
       return;

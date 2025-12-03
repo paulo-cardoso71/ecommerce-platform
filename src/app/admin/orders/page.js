@@ -1,14 +1,14 @@
 import connectToDatabase from "@/lib/db";
 import Order from "@/models/Order";
-import User from "@/models/User"; // Importante pro populate do usuário
+import User from "@/models/User"; // Important for populate
 
 export default async function AdminOrdersPage() {
   await connectToDatabase();
 
-  // Buscamos os pedidos e trazemos os dados do Usuário dono do pedido
+  // Search the orders and bring the data from the order owner 
   const orders = await Order.find()
-    .populate('user', 'name email') // Traz só nome e email do usuário
-    .sort({ createdAt: -1 }) // Mais recentes primeiro
+    .populate('user', 'name email') // Brings only name and e-mail
+    .sort({ createdAt: -1 }) // Newer/latest first
     .lean();
 
   return (
@@ -36,7 +36,7 @@ export default async function AdminOrdersPage() {
             ) : (
               orders.map((order) => (
                 <tr key={order._id} className="border-b border-gray-100 hover:bg-gray-50">
-                  {/* ID curto pra não poluir a tela */}
+                  {/* Short ID*/}
                   <td className="py-3 px-4 font-mono text-xs text-gray-500">
                     {order._id.toString().slice(-6).toUpperCase()}
                   </td>

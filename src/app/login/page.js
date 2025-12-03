@@ -6,19 +6,21 @@ import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const router = useRouter();
+
+  // Local State: Manages form input values
   const [data, setData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault();// Prevents default HTML form submission reload
     setLoading(true);
     setError('');
 
     try {
-      // Aqui chamamos o NextAuth para tentar logar
+      // Authentication Request using NextAuth Credentials Provider
       const result = await signIn('credentials', {
-        redirect: false, // Importante: Não recarregar a página automaticamente
+        redirect: false, // Keeps user on the same page to handle errors manually
         email: data.email,
         password: data.password,
       });
@@ -27,9 +29,9 @@ export default function LoginPage() {
         setError('Invalid email or password.');
         setLoading(false);
       } else {
-        // Sucesso! Redireciona para o Admin
+        // Success: Redirect to Admin Dashboard
         router.push('/admin');
-        // router.refresh(); // Opcional: Garante que os dados da sessão atualizem
+        // router.refresh(); // Optional
       }
     } catch (err) {
       setError('Something went wrong. Please try again.');
@@ -56,11 +58,11 @@ export default function LoginPage() {
        
         <div className="mt-4">
           <button
-            type="button" // Importante ser type="button" pra não enviar o formulário
-            onClick={() => signIn("google", { callbackUrl: "/" })} // Redireciona pra Home ao logar
+            type="button" // Important: Prevents this button from submitting the form above
+            onClick={() => signIn("google", { callbackUrl: "/" })} 
             className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition"
           >
-            {/* Ícone do Google (SVG simples) */}
+            {/* Google Icon (SVG) */}
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"

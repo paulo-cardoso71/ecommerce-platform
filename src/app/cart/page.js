@@ -7,23 +7,25 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function CartPage() {
-  // Importamos as novas funções aqui: addToCart e decreaseQuantity
+  // Global State Hooks: Access cart methods from Context
   const { cart, removeFromCart, addToCart, decreaseQuantity } = useCart();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  // Calcula total
+  // Derived State: Calculates total on-the-fly to ensure accuracy with current cart state
   const total = cart.reduce((acc, item) => acc + (item.price * (item.quantity || 1)), 0);
 
   const handleCheckout = async () => {
     setLoading(true);
     try {
+      // API Call: Initiates Stripe Checkout Session
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ items: cart }),
       });
 
+      // Auth Guard: Redirects to login if user is unauthenticated
       if (res.status === 401) {
         alert("Please login to checkout!");
         router.push("/api/auth/signin");
@@ -33,6 +35,7 @@ export default function CartPage() {
       const data = await res.json();
 
       if (data.url) {
+        // Redirects user to Stripe's hosted checkout page
         window.location.href = data.url;
       } else {
         alert("Failed to create checkout session");
@@ -40,7 +43,7 @@ export default function CartPage() {
 
     } catch (error) {
       console.error(error);
-      alert("Error");
+      alert("Error processing checkout");
     } finally {
       setLoading(false);
     }
@@ -53,6 +56,7 @@ export default function CartPage() {
       <main className="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
 
+        {/* Empty State Handling */}
         {cart.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-lg shadow-sm border border-gray-100">
             <h2 className="text-2xl font-bold text-gray-400 mb-4">Your cart is empty</h2>
@@ -63,12 +67,12 @@ export default function CartPage() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            {/* Lista de Itens */}
+            {/* Cart Items List */}
             <div className="lg:col-span-2 space-y-4">
               {cart.map((item) => (
                 <div key={item._id} className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100 items-start sm:items-center">
                   
-                  {/* Imagem */}
+                  {/* Product Thumbnail */}
                   <div className="h-24 w-24 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden relative">
                     {item.imageUrl ? (
                       <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
@@ -77,12 +81,11 @@ export default function CartPage() {
                     )}
                   </div>
 
-                  {/* Detalhes + Controle de Quantidade */}
+                  {/* Product Details & Quantity Controls */}
                   <div className="flex-1">
                     <h3 className="font-bold text-gray-900">{item.name}</h3>
                     <p className="text-gray-500 text-sm mb-2">{item.category?.name || "General"}</p>
                     
-                    {/* --- CONTROLE DE QUANTIDADE --- */}
                     <div className="flex items-center gap-4">
                       <div className="flex items-center border border-gray-300 rounded-md bg-white">
                         <button 
@@ -108,7 +111,7 @@ export default function CartPage() {
                     </div>
                   </div>
 
-                  {/* Botão Remover */}
+                  {/* Remove Item Button */}
                   <button 
                     onClick={() => removeFromCart(item._id)}
                     className="text-red-500 hover:text-red-700 text-sm font-medium px-3 py-1 rounded hover:bg-red-50 transition"
@@ -119,7 +122,7 @@ export default function CartPage() {
               ))}
             </div>
 
-            {/* Resumo */}
+            {/* Order Summary & Checkout Section */}
             <div className="lg:col-span-1">
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 sticky top-24">
                 <h2 className="text-lg font-bold text-gray-900 mb-4">Order Summary</h2>

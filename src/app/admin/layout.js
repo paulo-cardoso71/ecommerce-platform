@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 
 export default async function AdminLayout({ children }) {
-  // 1. Verificação de Segurança
+  // Security check
   const session = await auth();
 
   if (!session || session.user.role !== "admin") {
@@ -13,7 +13,7 @@ export default async function AdminLayout({ children }) {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
       
-      {/* --- MENU MOBILE (Aparece só no celular) --- */}
+      {/* --- MOBILE MENU */}
       <nav className="md:hidden bg-white shadow-sm p-4 flex flex-wrap gap-4 justify-center text-sm font-medium border-b border-gray-200">
         <Link href="/admin" className="text-gray-700 hover:text-indigo-600">Dashboard</Link>
         <Link href="/admin/products" className="text-gray-700 hover:text-indigo-600">Products</Link>
@@ -22,9 +22,9 @@ export default async function AdminLayout({ children }) {
         <Link href="/" className="text-indigo-600 font-bold">Go to Store</Link>
       </nav>
 
-      {/* --- SIDEBAR DESKTOP (Aparece só no PC) --- */}
-      {/* 'hidden md:flex' = Esconde no mobile, mostra flex no desktop */}
-      {/* 'w-64 flex-shrink-0' = Largura fixa de 250px, proibido encolher */}
+      {/* --- SIDEBAR DESKTOP (PC only) --- */}
+      {/* 'hidden md:flex' = hide in mobile, show on pc */}
+      {/* 'w-64 flex-shrink-0'*/}
       <aside className="hidden md:flex w-64 flex-shrink-0 bg-white shadow-md flex-col h-screen sticky top-0 overflow-y-auto">
         <div className="p-6">
           <h2 className="text-2xl font-bold text-gray-800">Admin Panel</h2>
@@ -59,8 +59,8 @@ export default async function AdminLayout({ children }) {
         </div>
       </aside>
 
-      {/* --- CONTEÚDO PRINCIPAL --- */}
-      {/* overflow-x-hidden evita que tabelas estourem a largura da tela */}
+      {/* --- Main Content --- */}
+      {/* overflow-x-hidden prevents tables form growing past the screen */}
       <main className="flex-1 p-4 md:p-8 overflow-x-hidden w-full">
         {children}
       </main>

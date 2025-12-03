@@ -10,11 +10,11 @@ export default async function AdminDashboard() {
 
   await connectToDatabase();
 
-  // 1. Buscando dados reais do banco
+  // 1.Searching real data
   const productsCount = await Product.countDocuments();
-  const orders = await Order.find({ status: 'paid' }).lean(); // Só conta pedidos pagos
+  const orders = await Order.find({ status: 'paid' }).lean(); // Only paid orders
 
-  // 2. Calculando o Faturamento Total
+  // 2. Total Revenue 
   const totalRevenue = orders.reduce((acc, order) => acc + (order.totalAmount || 0), 0);
 
   return (
@@ -23,7 +23,7 @@ export default async function AdminDashboard() {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        {/* Card 1: Faturamento */}
+        {/* Card 1: Revenue */}
         <div className="bg-white p-6 rounded-lg shadow border border-gray-100">
           <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">Total Revenue</h3>
           <p className="text-3xl font-bold text-emerald-600 mt-2">
@@ -31,7 +31,7 @@ export default async function AdminDashboard() {
           </p>
         </div>
         
-        {/* Card 2: Pedidos */}
+        {/* Card 2: Orders */}
         <div className="bg-white p-6 rounded-lg shadow border border-gray-100">
           <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">Total Orders</h3>
           <p className="text-3xl font-bold text-indigo-600 mt-2">
@@ -39,7 +39,7 @@ export default async function AdminDashboard() {
           </p>
         </div>
         
-        {/* Card 3: Produtos */}
+        {/* Card 3: Products */}
         <div className="bg-white p-6 rounded-lg shadow border border-gray-100">
           <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">Active Products</h3>
           <p className="text-3xl font-bold text-gray-900 mt-2">

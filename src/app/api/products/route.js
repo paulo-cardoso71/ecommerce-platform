@@ -2,10 +2,11 @@ import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/db";
 import Product from "@/models/Product";
-import Category from "@/models/Category"; // Importante importar para o populate funcionar!
+import Category from "@/models/Category"; // Required for Mongoose .populate() hooks to work
 
 export async function POST(req) {
   try {
+    // Authorization Gate: Only Admins can create products
     const session = await auth();
     if (!session || session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -14,75 +15,73 @@ export async function POST(req) {
     await connectToDatabase();
     const data = await req.json();
 
-    // Cria o produto
+    // Data Persistence
     const newProduct = await Product.create(data);
     return NextResponse.json(newProduct, { status: 201 });
 
   } catch (error) {
-    console.error("Erro ao criar produto:", error);
+    console.error("Product Creation Error:", error);
     return NextResponse.json({ error: "Error creating product" }, { status: 500 });
   }
 }
 
 export async function DELETE(req) {
   try {
-    // 1. Verificar Segurança
+    // Authorization Check
     const session = await auth();
     if (!session || session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 2. Pegar o ID da URL (Ex: /api/categories?id=123)
+    // Query Parameter Extraction
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+      return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
     }
 
     await connectToDatabase();
 
-    // 3. Deletar do Banco
+    // Database Operation
     await Product.findByIdAndDelete(id);
 
-    return NextResponse.json({ message: "Deleted" }, { status: 200 });
+    return NextResponse.json({ message: "Product deleted successfully" }, { status: 200 });
 
   } catch (error) {
-    return NextResponse.json({ error: "Error deleting" }, { status: 500 });
+    return NextResponse.json({ error: "Error deleting product" }, { status: 500 });
   }
 }
 
 export async function PUT(req) {
   try {
-    // 1. Segurança
+    //Security Check
     const session = await auth();
-    
     if (!session || session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 2. Conectar
     await connectToDatabase();
 
-    // 3. Pegar os dados novos
+    //Payload Extraction
     const { id, name, description, price, imageUrl, category, featured } = await req.json();
 
     if (!id) {
-      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+      return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
     }
 
-    // 4. Atualizar no Banco
-    // findByIdAndUpdate(QUEM, O_QUE_MUDAR, { new: true }) -> o new: true retorna o dado atualizado
+    // Atomic Update
+    // { new: true } ensures we return the updated document, not the old one
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
-      { name, description, price, imageUrl, category, featured }, // <--- Adicionado!
+      { name, description, price, imageUrl, category, featured },
       { new: true } 
     );
 
     return NextResponse.json(updatedProduct, { status: 200 });
 
   } catch (error) {
-    return NextResponse.json({ error: "Error updating" }, { status: 500 });
+    return NextResponse.json({ error: "Error updating product" }, { status: 500 });
   }
 }
 
@@ -92,11 +91,12 @@ export async function GET(req) {
   const id = searchParams.get('id');
 
   if (id) {
+    // Fetch Single Product
     const product = await Product.findById(id).populate('category');
     return NextResponse.json(product);
   } else {
-    // .populate('category') -> Troca o ID "65a..." pelo objeto real da categoria { name: "Sneakers" }
-    // Isso é mágico na hora de mostrar a tabela!
+    // Fetch All Products
+    // .populate('category') joins the Category collection to include full category details (name, etc.) instead of just the ID
     const products = await Product.find().populate('category').sort({ createdAt: -1 });
     return NextResponse.json(products);
   }

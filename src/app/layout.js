@@ -1,30 +1,32 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { CartProvider } from "@/context/CartContext"; // <--- Importe isso
-import Footer from "@/components/Footer"; // <--- Importe
-import { Toaster } from "react-hot-toast"; // <--- 1. Importe isso
+import { CartProvider } from "@/context/CartContext";
+import Footer from "@/components/Footer";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "NextStore",
-  description: "Your best e-commerce",
+  description: "Your best e-commerce experience",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* Envolva tudo aqui dentro */}
+        {/* Global State Provider: Wraps the entire app so Cart data is accessible everywhere */}
         <CartProvider>
 
-          {/* 2. FALTOU COLOCAR AQUI! Sem isso, as notificações não aparecem */}
+          {/* Toast Notification Wrapper (Must be placed at the root level) */}
           <Toaster position="bottom-right" toastOptions={{ duration: 3000 }} />
 
-        <div className="flex flex-col min-h-screen"> {/* Adicione essa div flex para o footer ficar embaixo */}
-        {children}
-        <Footer /> {/* <--- Adicione aqui */}
-      </div>
+          {/* Sticky Footer Layout: Ensures the footer stays at the bottom even on short pages */}
+          <div className="flex flex-col min-h-screen"> 
+            {children}
+            <Footer />
+          </div>
+          
         </CartProvider>
       </body>
     </html>

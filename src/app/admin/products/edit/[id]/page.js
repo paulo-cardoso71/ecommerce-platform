@@ -22,12 +22,12 @@ export default function EditProductPage({ params }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // 1. Busca categorias
+    // Search categories
     fetch('/api/categories')
       .then(res => res.json())
       .then(cats => setCategories(cats));
 
-    // 2. Busca o produto
+    // Search the product
     fetch('/api/products?id=' + id)
       .then(res => res.json())
       .then(product => {
@@ -36,10 +36,10 @@ export default function EditProductPage({ params }) {
         setPrice(product.price);
         setImageUrl(product.imageUrl || '');
         
-        // Carrega o estado do destaque
+        // Load featured state
         setFeatured(product.featured || false);
         
-        // Lógica do ID da categoria
+        // Category ID logic
         if (product.category && product.category._id) {
           setCategoryId(product.category._id);
         } else {
@@ -63,7 +63,7 @@ export default function EditProductPage({ params }) {
           price: Number(price), 
           imageUrl, 
           category: categoryId,
-          featured // <--- IMPORTANTE: Enviando o checkbox para a API
+          featured 
         }),
       });
 

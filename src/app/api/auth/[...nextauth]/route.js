@@ -1,3 +1,3 @@
-import { handlers } from "@/auth"; // O @ aponta para a pasta src
+import { handlers } from "@/auth"; // the @ points to the src folder
 
 export const { GET, POST } = handlers;

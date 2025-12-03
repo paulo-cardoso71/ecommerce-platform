@@ -7,13 +7,15 @@ import HeroCarousel from "@/components/HeroCarousel";
 import { Suspense } from "react";
 
 export default async function HomePage() {
+  // Database Connection & Fetching
+  // running directly on the server for better SEO and performance (Zero Bundle Size)
   await connectToDatabase();
   
-  // 1. Busca Dados
   const productsRaw = await Product.find().populate('category').sort({ createdAt: -1 }).lean();
   const categoriesRaw = await Category.find().sort({ name: 1 }).lean();
 
-  // 2. Limpeza de Dados
+  // Data Serialization
+  // Converts MongoDB _id objects to strings to prevent "Plain Object" errors in Client Components
   const products = productsRaw.map(p => ({
     ...p,
     _id: p._id.toString(),
@@ -25,7 +27,7 @@ export default async function HomePage() {
     _id: c._id.toString()
   }));
 
-  // 3. Lógica do Destaque: PEGA TODOS OS QUE TÊM FEATURED: TRUE
+  // Business Logic: Filter Featured Products for the Hero Section
   const featuredProducts = products.filter(p => p.featured === true);
 
   return (
@@ -33,11 +35,10 @@ export default async function HomePage() {
       <Navbar />
 
       {/* --- HERO SECTION --- */}
+      {/* Conditional Rendering: Shows Carousel if data exists, otherwise fallback to generic Banner */}
       {featuredProducts.length > 0 ? (
-        // Se tiver destaques, mostra o Carrossel
         <HeroCarousel featuredProducts={featuredProducts} />
       ) : (
-        // Se não tiver nenhum, mostra o Banner Padrão
         <section className="bg-indigo-700 text-white py-20 px-4">
            <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">Welcome to NextStore</h1>
@@ -46,7 +47,8 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* VITRINE */}
+      {/* --- MAIN SHOWCASE --- */}
+      {/* Suspense Boundary: Shows a loading state while the showcase component hydrates */}
       <Suspense fallback={<div className="text-center py-20">Loading showcase...</div>}>
         <ProductShowcase initialProducts={products} categories={categories} />
       </Suspense>

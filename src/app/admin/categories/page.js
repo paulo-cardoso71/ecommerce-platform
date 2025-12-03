@@ -1,18 +1,18 @@
 import Link from "next/link";
-import Category from "@/models/Category"; // Importando o Model direto (Server Component)
+import Category from "@/models/Category"; // Importing model
 import connectToDatabase from "@/lib/db";
 import DeleteCategoryBtn from "@/components/DeleteCategoryBtn";
 
 export default async function CategoriesPage() {
-  // 1. Busca os dados no Banco (Server-Side é direto, sem fetch API!)
+  // 1. Search data in bank
   await connectToDatabase();
-  // .lean() transforma o objeto complexo do Mongoose em JSON puro (mais rápido)
+  // .lean() 
   const categories = await Category.find().sort({ createdAt: -1 }).lean();
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
       
-      {/* Cabeçalho da Página */}
+      {/* Page header*/}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Categories</h1>
         <Link 
@@ -23,7 +23,7 @@ export default async function CategoriesPage() {
         </Link>
       </div>
 
-      {/* Tabela de Listagem */}
+      {/* List Table*/}
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>

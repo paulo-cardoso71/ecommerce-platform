@@ -1,34 +1,34 @@
-'use client'; // 1. Obrigatório porque o usuário vai digitar
+'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // 1. Importante para redirecionar
+import { useRouter } from 'next/navigation'; // Important to redirect
 
 export default function NewCategoryPage() {
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [loading, setLoading] = useState(false); // Para travar o botão enquanto salva
+  const [loading, setLoading] = useState(false); // Locks the button when saving
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Começou a salvar...
+    setLoading(true); // Starts saving...
 
     try {
-      // 2. O famoso FETCH (O Carteiro)
+      // FETCH
       const response = await fetch('/api/categories', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        // Transformamos os dados em texto JSON para viajar na rede
+        // Converting into json
         body: JSON.stringify({ name, description }),
       });
 
       if (response.ok) {
-        // 3. Se deu certo (200 OK)
-        router.push('/admin/categories'); // Volta para a tabela
-        router.refresh(); // Atualiza os dados da tabela
+        // if it's ok : (200 OK)
+        router.push('/admin/categories'); 
+        router.refresh();
       } else {
         alert("Erro ao salvar categoria");
         setLoading(false);
@@ -47,20 +47,20 @@ export default function NewCategoryPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         
-        {/* Campo NOME */}
+        {/* Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
           <input 
             type="text" 
             placeholder="Ex: Sneakers"
-            required // HTML5 valida se está vazio
+            required 
             value={name}
             onChange={(ev) => setName(ev.target.value)}
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
           />
         </div>
 
-        {/* Campo DESCRIÇÃO */}
+        {/* DESCRIPTION */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
           <input 
@@ -72,10 +72,10 @@ export default function NewCategoryPage() {
           />
         </div>
 
-        {/* Botão de Salvar Inteligente */}
+        {/*SAVE BUTTON */}
         <button 
           type="submit" 
-          disabled={loading} // Desabilita se estiver salvando
+          disabled={loading} // lock if its saving
           className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors font-medium disabled:bg-indigo-300"
         >
           {loading ? 'Saving...' : 'Save Category'}

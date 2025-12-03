@@ -10,7 +10,7 @@ export default function NewProductPage() {
   const [imageUrl, setImageUrl] = useState('');
   const [categoryId, setCategoryId] = useState('');
   
-  // NOVO: Estado do Destaque
+  // Highlight state
   const [featured, setFeatured] = useState(false);
   
   const [categories, setCategories] = useState([]);
@@ -37,7 +37,7 @@ export default function NewProductPage() {
           price: Number(price), 
           imageUrl, 
           category: categoryId,
-          featured // <--- Enviando o destaque na criação
+          featured 
         }),
       });
 
@@ -84,7 +84,7 @@ export default function NewProductPage() {
           </select>
         </div>
 
-        {/* Descrição */}
+        {/* Description */}
         <div>
           <label className="block text-sm font-medium text-gray-700">Description</label>
           <textarea 
@@ -94,7 +94,7 @@ export default function NewProductPage() {
           />
         </div>
 
-        {/* Preço e Imagem */}
+        {/* Price and image */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Price (USD)</label>
@@ -114,7 +114,7 @@ export default function NewProductPage() {
           </div>
         </div>
 
-        {/* --- CHECKBOX DE DESTAQUE --- */}
+        {/* --- HIGHLIGHT CHECKBOX --- */}
         <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-md mt-4">
           <input 
             type="checkbox" 

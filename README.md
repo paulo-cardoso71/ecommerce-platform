@@ -6,6 +6,12 @@
 
 **NextStore** is a fully functional web application that simulates a real-world online store. It allows users to browse products, filter by categories, manage a shopping cart, and complete payments securely. It also features a comprehensive **Admin Panel** for business management.
 
+<div align="center">
+  <h3>
+    <a href="https://ecommerce-platform-paulo.vercel.app">🔴 VIEW LIVE DEMO</a>
+  </h3>
+</div>
+
 ## 🚀 Tech Stack
 
 This project was built using the most modern stack available for React developers:
@@ -109,8 +115,6 @@ This project is deployed on Vercel, taking advantage of:
 - Serverless Functions: For API routes.
 - Edge Caching: For fast static content delivery.
 - Continuous Deployment: Updates automatically on git push.
-
-Live Demo: https://ecommerce-platform-paulo.vercel.app
 
 ## Author
 
