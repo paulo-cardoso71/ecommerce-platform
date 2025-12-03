@@ -8,7 +8,7 @@
 
 <div align="center">
   <h3>
-    <a href="https://ecommerce-platform-paulo.vercel.app">🔴 VIEW LIVE DEMO</a>
+    <a href="https://ecommerce-platform-topaz.vercel.app/">🔴 VIEW LIVE DEMO</a>
   </h3>
 </div>
 
