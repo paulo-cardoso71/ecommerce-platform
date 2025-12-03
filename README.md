@@ -6,11 +6,10 @@
 
 **NextStore** is a fully functional web application that simulates a real-world online store. It allows users to browse products, filter by categories, manage a shopping cart, and complete payments securely. It also features a comprehensive **Admin Panel** for business management.
 
-<div align="center">
-  <h3>
-    <a href="https://ecommerce-platform-topaz.vercel.app/">🔴 VIEW LIVE DEMO</a>
-  </h3>
-</div>
+## 🔗 Live Demo
+
+Access the deployed application here:
+👉 **[https://ecommerce-platform-topaz.vercel.app/](https://ecommerce-platform-topaz.vercel.app/)**
 
 ## 🚀 Tech Stack
 
