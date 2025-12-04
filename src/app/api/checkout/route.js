@@ -30,6 +30,12 @@ export async function POST(req) {
       quantity: item.quantity || 1,
     }));
 
+    const baseUrl = process.env.NEXT_PUBLIC_URL
+      ? process.env.NEXT_PUBLIC_URL
+      : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
+
     // 3. Create Stripe Checkout Session
     const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
