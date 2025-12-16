@@ -56,6 +56,35 @@ It aims to showcase proficiency in Full Stack development, bridging the gap betw
 - [x] Stripe Payments Integration
 - [x] UI/UX Polish
 
+## 🧠 Architectural Decisions & Technical Strategy
+
+Building a full-stack e-commerce platform requires handling complex state (cart management), secure payments, and flexible data modeling. Here is the reasoning behind the key technical choices:
+
+### 1. Hybrid Rendering Strategy (Next.js 15)
+**Decision:** Utilized a hybrid approach with Server Components for catalog browsing and Client Components for cart interactions.
+**Reasoning:** - **SEO & Performance:** Product pages utilize Server Side Rendering (SSR) to ensure maximum SEO visibility and fast initial load times (LCP), which is crucial for conversion rates.
+- **Interactivity:** The Shopping Cart and Checkout flows leverage Client Components to provide immediate feedback (optimistic UI) when users add items or update quantities, without requiring full page reloads.
+
+### 2. State Management: Global Store (Zustand/Context)
+**Decision:** Centralized client-side state for the Shopping Cart.
+**Reasoning:** - Managing the cart state strictly via props drilling would be unmaintainable. 
+- A global store allows the cart count badge in the `Navbar` to update instantly from any "Add to Cart" button in the `ProductCard`, ensuring a synchronized UI across the application.
+
+### 3. Payment Processing: Event-Driven Webhooks (Stripe)
+**Decision:** Offloaded payment processing to Stripe and implemented Webhooks for order fulfillment.
+**Reasoning:** - **Security:** Sensitive credit card data never touches our database, ensuring PCI compliance.
+- **Reliability:** Instead of relying on the client-side success callback (which can be interrupted if the user closes the tab), we listen for Stripe's server-to-server `checkout.session.completed` webhook event to securely update the database and trigger order confirmation emails.
+
+### 4. Database Strategy: NoSQL (MongoDB)
+**Decision:** Chosen a Document-based database over a Relational one.
+**Reasoning:** - E-commerce product catalogs are inherently unstructured (e.g., a T-shirt has sizes/colors, while a laptop has RAM/CPU specs). 
+- MongoDB allows for a flexible schema design where product attributes can vary without complex JOIN operations or rigid migration constraints.
+
+### 5. Authentication: NextAuth.js (Auth.js)
+**Decision:** Implemented NextAuth for session handling.
+**Reasoning:** - Unlike external managed services, NextAuth gives us full ownership of the user session data within our own database.
+- It simplifies the integration of multiple OAuth providers (Google, GitHub) alongside standard credential login, unifying the user identity layer.
+
 ## 🔧 How to Run Locally
 
 If you want to test this project on your machine, follow these steps:
