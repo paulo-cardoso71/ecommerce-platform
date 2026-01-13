@@ -7,7 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(req) {
   try {
-    // 1. Authentication Guard: Ensure user is logged in
+    // Authentication Guard: Ensure user is logged in
     const session = await auth();
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -15,7 +15,7 @@ export async function POST(req) {
 
     const { items } = await req.json();
 
-    // 2. Data Transformation (DTO)
+    // Data Transformation (DTO)
     // Converts internal product structure to Stripe's "Line Items" format
     const line_items = items.map((item) => ({
       price_data: {
@@ -36,7 +36,7 @@ export async function POST(req) {
       ? `https://${process.env.VERCEL_URL}`
       : "http://localhost:3000";
 
-    // 3. Create Stripe Checkout Session
+    // Create Stripe Checkout Session
     const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items,
