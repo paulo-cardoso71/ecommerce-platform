@@ -1,87 +1,107 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Important to redirect
+import { useRouter } from 'next/navigation';
+import { ArrowLeft, Save, Layers } from 'lucide-react';
 
 export default function NewCategoryPage() {
-
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [loading, setLoading] = useState(false); // Locks the button when saving
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Starts saving...
+    setLoading(true);
 
     try {
-      // FETCH
       const response = await fetch('/api/categories', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        // Converting into json
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, description }),
       });
 
       if (response.ok) {
-        // if it's ok : (200 OK)
-        router.push('/admin/categories'); 
+        router.push('/admin/categories');
         router.refresh();
       } else {
-        alert("Erro ao salvar categoria");
+        alert("Error saving category");
         setLoading(false);
       }
-
     } catch (error) {
-      console.error(error);
-      alert("Erro ao conectar com o servidor");
+      alert("Server connection error");
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md border border-gray-200 mt-10">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Create New Category</h1>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        
-        {/* Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
-          <input 
-            type="text" 
-            placeholder="Ex: Sneakers"
-            required 
-            value={name}
-            onChange={(ev) => setName(ev.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
-          />
-        </div>
-
-        {/* DESCRIPTION */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <input 
-            type="text" 
-            placeholder="Ex: Basketball shoes..."
-            value={description}
-            onChange={(ev) => setDescription(ev.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
-          />
-        </div>
-
-        {/*SAVE BUTTON */}
-        <button 
-          type="submit" 
-          disabled={loading} // lock if its saving
-          className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors font-medium disabled:bg-indigo-300"
-        >
-          {loading ? 'Saving...' : 'Save Category'}
+    <div className="max-w-2xl mx-auto">
+      
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-8">
+        <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-lg transition">
+          <ArrowLeft className="w-5 h-5 text-gray-500" />
         </button>
+        <div>
+           <h1 className="text-2xl font-bold text-gray-900">New Category</h1>
+           <p className="text-sm text-gray-500">Create a collection to organize products.</p>
+        </div>
+      </div>
 
-      </form>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
+           <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+              <Layers className="w-5 h-5" />
+           </div>
+           <h3 className="font-semibold text-gray-900">Category Details</h3>
+        </div>
+
+        <div className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
+              <input 
+                type="text" 
+                placeholder="e.g. Sneakers"
+                required 
+                value={name}
+                onChange={(ev) => setName(ev.target.value)}
+                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-gray-900 transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea 
+                placeholder="Brief description of this collection..."
+                value={description}
+                onChange={(ev) => setDescription(ev.target.value)}
+                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-gray-900 transition-all h-32 resize-none"
+              />
+            </div>
+
+            <div className="pt-4 flex gap-3">
+               <button 
+                type="button"
+                onClick={() => router.back()} 
+                className="px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition"
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                disabled={loading} 
+                className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition disabled:bg-indigo-300"
+              >
+                <Save className="w-4 h-4" />
+                {loading ? 'Saving...' : 'Create Category'}
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
