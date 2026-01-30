@@ -2,32 +2,25 @@
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
+import { ArrowLeft, Save, Star, Trash2 } from 'lucide-react'; // Added Trash icon option
 
 export default function EditProductPage({ params }) {
   const { id } = use(params);
   const router = useRouter();
 
-  // Estados do Formulário
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [categoryId, setCategoryId] = useState('');
-  
-  // NOVO ESTADO: Destaque
   const [featured, setFeatured] = useState(false);
   
-  // Listas e Loadings
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Search categories
-    fetch('/api/categories')
-      .then(res => res.json())
-      .then(cats => setCategories(cats));
+    fetch('/api/categories').then(res => res.json()).then(cats => setCategories(cats));
 
-    // Search the product
     fetch('/api/products?id=' + id)
       .then(res => res.json())
       .then(product => {
@@ -35,11 +28,8 @@ export default function EditProductPage({ params }) {
         setDescription(product.description);
         setPrice(product.price);
         setImageUrl(product.imageUrl || '');
-        
-        // Load featured state
         setFeatured(product.featured || false);
         
-        // Category ID logic
         if (product.category && product.category._id) {
           setCategoryId(product.category._id);
         } else {
@@ -56,113 +46,132 @@ export default function EditProductPage({ params }) {
       const res = await fetch('/api/products', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          id, 
-          name, 
-          description, 
-          price: Number(price), 
-          imageUrl, 
-          category: categoryId,
-          featured 
-        }),
+        body: JSON.stringify({ id, name, description, price: Number(price), imageUrl, category: categoryId, featured }),
       });
 
       if (res.ok) {
         router.push('/admin/products');
         router.refresh();
       } else {
-        alert("Erro ao atualizar");
+        alert("Error updating");
       }
     } catch (error) {
-      alert("Erro de conexão");
+      alert("Connection error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md border border-gray-200 mt-10">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Edit Product</h1>
+    <div className="max-w-5xl mx-auto pb-10">
+      
+      <div className="flex items-center gap-4 mb-6">
+        <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-lg transition">
+          <ArrowLeft className="w-5 h-5 text-gray-500" />
+        </button>
+        <div>
+           <h1 className="text-2xl font-bold text-gray-900">Edit Product</h1>
+           <p className="text-sm text-gray-500">Update product details and settings.</p>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Nome */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Product Name</label>
-          <input 
-            type="text" required value={name} onChange={e => setName(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded text-gray-900"
-          />
-        </div>
-
-        {/* Categoria */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Category</label>
-          <select 
-            value={categoryId} onChange={e => setCategoryId(e.target.value)} required
-            className="w-full p-2 border border-gray-300 rounded text-gray-900 bg-white"
-          >
-            <option value="">Select Category...</option>
-            {categories.map(cat => (
-              <option key={cat._id} value={cat._id}>{cat.name}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Descrição */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Description</label>
-          <textarea 
-            value={description} onChange={e => setDescription(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded text-gray-900 h-24"
-          />
-        </div>
-
-        {/* Preço e Imagem */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Price</label>
-            <input 
-              type="number" step="0.01" required value={price} onChange={e => setPrice(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded text-gray-900"
-            />
+        {/* LEFT COLUMN */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h3 className="font-semibold text-gray-800 mb-4 text-lg">Product Information</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                <input 
+                  type="text" required value={name} onChange={e => setName(e.target.value)}
+                  className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea 
+                  required value={description} onChange={e => setDescription(e.target.value)}
+                  className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none h-40 resize-none"
+                />
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Image URL</label>
-            <input 
-              type="text" value={imageUrl} onChange={e => setImageUrl(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded text-gray-900"
-            />
+
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+             <h3 className="font-semibold text-gray-800 mb-4 text-lg">Media</h3>
+             <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                <input 
+                  type="text" value={imageUrl} onChange={e => setImageUrl(e.target.value)}
+                  className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
+                {imageUrl && (
+                  <div className="mt-4 h-40 w-40 rounded-lg border border-gray-200 overflow-hidden bg-gray-50">
+                     <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+             </div>
           </div>
         </div>
 
-        {/* --- NOVO: CHECKBOX DE DESTAQUE --- */}
-        <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-md mt-4">
-          <input 
-            type="checkbox" 
-            id="featured"
-            checked={featured}
-            onChange={e => setFeatured(e.target.checked)}
-            className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500 cursor-pointer"
-          />
-          <label htmlFor="featured" className="font-medium text-yellow-800 cursor-pointer select-none">
-            ⭐ Highlight this product on Homepage (Hero Section)
-          </label>
-        </div>
+        {/* RIGHT COLUMN */}
+        <div className="space-y-6">
+           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+              <h3 className="font-semibold text-gray-800 mb-4 text-lg">Details</h3>
+              <div className="space-y-4">
+                 <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Price (USD)</label>
+                    <div className="relative">
+                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                       <input 
+                          type="number" step="0.01" required value={price} onChange={e => setPrice(e.target.value)}
+                          className="w-full pl-7 p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                       />
+                    </div>
+                 </div>
+                 <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select 
+                      value={categoryId} onChange={e => setCategoryId(e.target.value)} required
+                      className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white"
+                    >
+                       <option value="">Select...</option>
+                       {categories.map(cat => (
+                         <option key={cat._id} value={cat._id}>{cat.name}</option>
+                       ))}
+                    </select>
+                 </div>
+              </div>
+           </div>
 
-        <div className="flex gap-4 mt-6">
-            <button 
-                type="button" onClick={() => router.back()}
-                className="w-1/3 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300"
-            >
-                Cancel
-            </button>
-            <button 
-                type="submit" disabled={loading}
-                className="w-2/3 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 disabled:bg-indigo-400 font-bold"
-            >
-                {loading ? 'Saving...' : 'Update Product'}
-            </button>
+           <div className="bg-indigo-50 p-6 rounded-xl border border-indigo-100">
+              <div className="flex items-start gap-3">
+                 <div className="p-2 bg-indigo-100 rounded-lg text-indigo-600">
+                    <Star className="w-5 h-5 fill-current" />
+                 </div>
+                 <div className="flex-1">
+                    <h4 className="font-semibold text-indigo-900">Featured</h4>
+                    <p className="text-xs text-indigo-700 mt-1">Show on Homepage Hero.</p>
+                    <div className="mt-3 flex items-center gap-2">
+                       <input 
+                          type="checkbox" checked={featured} onChange={e => setFeatured(e.target.checked)}
+                          className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500 cursor-pointer"
+                       />
+                       <label className="text-sm font-medium text-indigo-800">Enabled</label>
+                    </div>
+                 </div>
+              </div>
+           </div>
+
+           <button 
+              type="submit" disabled={loading}
+              className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition font-bold shadow-sm disabled:opacity-50"
+           >
+              <Save className="w-4 h-4" />
+              {loading ? 'Saving...' : 'Update Product'}
+           </button>
         </div>
 
       </form>
