@@ -2,23 +2,22 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from "next/link";
-import AddToCartBtn from "@/components/AddToCartBtn";
+import AddToCartBtn from "@/components/AddToCartBtn"; // Importing the real logic
+import { ShoppingBag } from 'lucide-react';
 
 export default function ProductShowcase({ initialProducts, categories }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   
   // 1. Single Source of Truth: Get state directly from the URL
-  // This prevents synchronization issues between local state and the URL
   const activeCategory = searchParams.get('category') || 'all';
 
   // 2. Handle Category Switching
-  // Instead of setting state, we push a new URL. The component re-renders automatically.
   const handleCategoryChange = (categoryId) => {
     if (categoryId === 'all') {
-      router.push('/', { scroll: false }); // Remove query param
+      router.push('/', { scroll: false }); 
     } else {
-      router.push(`/?category=${categoryId}`, { scroll: false }); // Add ?category=ID
+      router.push(`/?category=${categoryId}`, { scroll: false }); 
     }
   };
 
@@ -28,32 +27,35 @@ export default function ProductShowcase({ initialProducts, categories }) {
     : initialProducts.filter(p => p.category?._id === activeCategory);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-16">
+    <div className="max-w-7xl mx-auto px-4 py-24">
       
-      {/* FILTER HEADER (Tabs) */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
-        <h2 className="text-3xl font-bold text-gray-900">Latest Arrivals</h2>
+      {/* HEADER & TABS */}
+      <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+        <div>
+           <h2 className="text-4xl font-black text-gray-900 tracking-tight">Latest Drops</h2>
+           <p className="text-gray-500 mt-2 text-lg">New arrivals fresh from the factory.</p>
+        </div>
         
-        <div className="flex flex-wrap gap-2 justify-center">
+        <div className="flex flex-wrap gap-2">
           <button 
             onClick={() => handleCategoryChange('all')}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+            className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
               activeCategory === 'all' 
-              ? 'bg-indigo-600 text-white shadow-lg scale-105' 
-              : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+              ? 'bg-black text-white shadow-lg scale-105' 
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            All Items
+            All
           </button>
           
           {categories.map(cat => (
             <button 
               key={cat._id}
               onClick={() => handleCategoryChange(cat._id)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+              className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
                 activeCategory === cat._id 
-                ? 'bg-indigo-600 text-white shadow-lg scale-105' 
-                : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                ? 'bg-black text-white shadow-lg scale-105' 
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               {cat.name}
@@ -63,53 +65,61 @@ export default function ProductShowcase({ initialProducts, categories }) {
       </div>
       
       {/* PRODUCT GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
         {filteredProducts.map((product) => (
-          <div key={product._id} className="bg-white rounded-xl shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 group flex flex-col">
+          <div key={product._id} className="group relative block">
             
-            {/* Image Link with Zoom Effect */}
-            <Link href={'/products/' + product._id} className="relative h-64 bg-gray-100 overflow-hidden block cursor-pointer">
-              {product.imageUrl ? (
-                <img 
-                  src={product.imageUrl} 
-                  alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full text-gray-400 font-medium">No Image</div>
-              )}
-              
-              {/* Optional: "New" Badge */}
-              {/* <span className="absolute top-3 right-3 bg-white/90 text-indigo-600 text-xs font-bold px-2 py-1 rounded shadow-sm">NEW</span> */}
+            {/* 1. IMAGE CARD */}
+            <div className="aspect-[1/1.1] bg-gray-100 rounded-3xl overflow-hidden relative mb-5 font-sans shadow-sm border border-gray-100">
+               
+               {/* Link covers the image area */}
+               <Link href={'/products/' + product._id} className="block w-full h-full">
+                  {product.imageUrl ? (
+                    <img 
+                      src={product.imageUrl} 
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-400 font-medium">No Image</div>
+                  )}
+               </Link>
+
+               {/* Category Badge (High Contrast) */}
+               <div className="absolute top-4 left-4 z-10 pointer-events-none">
+                  <span className="bg-black text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                    {product.category?.name || "General"}
+                  </span>
+               </div>
+
+               {/* --- REAL QUICK ADD BUTTON --- */}
+               {/* Appears on hover, floating at bottom right */}
+               <div className="absolute bottom-4 right-4 translate-y-16 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out z-20">
+                  <AddToCartBtn product={product} mode="icon" />
+               </div>
+               {/* ----------------------------- */}
+
+            </div>
+
+            {/* 2. PRODUCT INFO */}
+            <Link href={'/products/' + product._id} className="block space-y-1">
+               <h3 className="text-lg font-bold text-black leading-tight group-hover:text-indigo-600 transition-colors font-sans">
+                 {product.name}
+               </h3>
+               
+               <div className="pt-1 flex items-center justify-between">
+                 <span className="text-lg font-black text-gray-900 tracking-tight">${product.price}</span>
+               </div>
             </Link>
 
-            <div className="p-5 flex flex-col flex-grow">
-              <div className="mb-2">
-                <span className="text-xs text-gray-400 uppercase tracking-wider font-semibold">
-                  {product.category?.name || "General"}
-                </span>
-                <Link href={'/products/' + product._id}>
-                  <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-indigo-600 transition-colors cursor-pointer mt-1">
-                    {product.name}
-                  </h3>
-                </Link>
-              </div>
-              
-              <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
-                <span className="text-xl font-bold text-gray-900">${product.price}</span>
-                {/* Compact Add to Cart Button */}
-                <div className="scale-90 origin-right"> 
-                   <AddToCartBtn product={product} mode="icon" />
-                </div>
-              </div>
-            </div>
           </div>
         ))}
         
         {/* Empty State */}
         {filteredProducts.length === 0 && (
-          <div className="col-span-full text-center py-20">
-            <p className="text-gray-400 text-lg">No products found in this category.</p>
+          <div className="col-span-full flex flex-col items-center justify-center py-24 text-gray-400 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+            <ShoppingBag className="w-12 h-12 mb-4 opacity-20" />
+            <p className="text-lg font-medium">No products found in this category.</p>
           </div>
         )}
       </div>

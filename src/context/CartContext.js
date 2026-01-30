@@ -55,7 +55,7 @@ export function CartProvider({ children }) {
       return [...prev, { ...product, quantity: 1 }];
     });
     
-    toast.success("Added to cart!");
+   
   };
 
   const removeFromCart = (productId) => {
